@@ -135,15 +135,16 @@ impl FfmpegWrapper {
     }
 
     pub async fn compress_video_with_progress(&self, input: &Path, output: &Path, crf: u8, progress: Option<ProgressCallback>) -> AppResult<()> {
-        self.process_video_with_progress(input, output, vec![
-            "-vcodec".to_string(), "libx264".to_string(),
-            "-crf".to_string(), crf.to_string(),
-            "-preset".to_string(), "medium".to_string(),
-            "-acodec".to_string(), "aac".to_string(),
-            "-b:a".to_string(), "128k".to_string(),
-        ], progress).await
-    }
-
+    self.process_video_with_progress(input, output, vec![
+        "-map".to_string(), "0:v:0".to_string(),
+        "-map".to_string(), "0:a?".to_string(),
+        "-vcodec".to_string(), "libx264".to_string(),
+        "-crf".to_string(), crf.to_string(),
+        "-preset".to_string(), "medium".to_string(),
+        "-acodec".to_string(), "aac".to_string(),
+        "-b:a".to_string(), "128k".to_string(),
+    ], progress).await
+}
     pub async fn extract_audio(&self, input: &Path, output: &Path) -> AppResult<()> {
         self.extract_audio_with_progress(input, output, None).await
     }
