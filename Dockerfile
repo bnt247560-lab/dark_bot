@@ -26,8 +26,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     unzip \
-    && curl -fsSL https://deno.land/install.sh | sh \
-    && ln -s /root/.deno/bin/deno /usr/local/bin/deno \
+    && curl -L -o /tmp/deno.zip https://github.com/denoland/deno/releases/download/v2.4.5/deno-x86_64-unknown-linux-gnu.zip \
+    && unzip /tmp/deno.zip -d /usr/local/bin \
+    && chmod +x /usr/local/bin/deno \
+    && rm /tmp/deno.zip \
     && pip3 install --break-system-packages --no-cache-dir -U "yt-dlp[default]" \
     && useradd -m -u 10001 appuser \
     && mkdir -p /app/storage/downloads /app/storage/processed /app/storage/temp /app/logs \
