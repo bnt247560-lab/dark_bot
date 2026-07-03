@@ -1,3 +1,4 @@
+use teloxide::types::InputFile; // أضف هذا السطر
 mod downloader;
 mod processor;
 
