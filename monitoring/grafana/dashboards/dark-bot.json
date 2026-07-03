@@ -1,0 +1,13 @@
+{
+  "title": "Dark Bot Overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {"type":"stat","title":"Pending Jobs","gridPos":{"x":0,"y":0,"w":6,"h":4},"targets":[{"expr":"dark_bot_queue_depth{queue=\"pending\"}"}]},
+    {"type":"stat","title":"Processing Jobs","gridPos":{"x":6,"y":0,"w":6,"h":4},"targets":[{"expr":"dark_bot_queue_depth{queue=\"processing\"}"}]},
+    {"type":"stat","title":"Dead Jobs","gridPos":{"x":12,"y":0,"w":6,"h":4},"targets":[{"expr":"dark_bot_queue_depth{queue=\"dead\"}"}]},
+    {"type":"stat","title":"Uptime Seconds","gridPos":{"x":18,"y":0,"w":6,"h":4},"targets":[{"expr":"dark_bot_uptime_seconds"}]},
+    {"type":"timeseries","title":"Completed Jobs Rate","gridPos":{"x":0,"y":4,"w":12,"h":8},"targets":[{"expr":"rate(dark_bot_jobs_total{status=\"completed\"}[5m])"}]},
+    {"type":"timeseries","title":"Failed Jobs Rate","gridPos":{"x":12,"y":4,"w":12,"h":8},"targets":[{"expr":"rate(dark_bot_jobs_total{status=\"failed\"}[5m])"}]}
+  ]
+}
