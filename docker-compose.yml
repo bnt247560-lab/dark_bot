@@ -1,0 +1,80 @@
+services:
+  bot:
+    build: .
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./storage:/app/storage
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dark_bot
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d dark_bot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.55.0
+    profiles: ["monitoring"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - bot
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    profiles: ["monitoring"]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
