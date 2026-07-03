@@ -38,7 +38,7 @@ impl Downloader {
             .arg("--newline")
             .arg("--no-color")
             .arg("--format")
-            .arg("bv*[ext=mp4]+ba[ext=m4a]/bv*+ba/b[ext=mp4]/b")
+            .arg("best[acodec!=none][vcodec!=none]/best[ext=mp4]/bv*+ba/best")
             .arg("--merge-output-format")
             .arg("mp4")
             .arg("--js-runtimes")
